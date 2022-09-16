@@ -1,0 +1,8 @@
+version: '3.7'
+
+services:
+  goserve:
+    build: .
+    container_name: imagine
+    command: "imagine server"
+    
