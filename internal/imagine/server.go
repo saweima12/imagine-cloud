@@ -2,30 +2,41 @@ package imagine
 
 import (
 	"github.com/labstack/echo"
-	"github.com/saweima12/imagine/internal/pkg/webdav"
+	"github.com/labstack/echo/middleware"
+	"github.com/saweima12/imagine/internal/modules"
+	"github.com/saweima12/imagine/internal/routes"
+	"github.com/saweima12/imagine/internal/services"
 )
 
-type Server struct {
-	Echo *echo.Echo
-	Dav  webdav.DAVHandler
-}
+func New() *modules.ImagineApp {
+	// Initialize echo engine & services.
+	engine := echo.New()
+	dav := services.NewDAV()
+	authService := services.NewUserAuthService()
 
-func New() *Server {
-	// define echo
-	e := echo.New()
-	// define webdav
-	dav := webdav.New()
+	// Add native middleware.
+	// engine.Use(middleware.Logger())
 
-	// define handler
-	s := &Server{
-		Echo: e,
-		Dav:  dav,
+	// Add CORS middleware & add support methods
+	defaultMethods := middleware.DefaultCORSConfig.AllowMethods
+	extMethods := append(defaultMethods, "LOCK", "MOVE", "PROPFIND", "UNLOCK", "PROPPATCH", "MKCOL", "LOCK")
+
+	engine.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		Skipper:      middleware.DefaultSkipper,
+		AllowOrigins: []string{"*"},
+		AllowHeaders: middleware.DefaultCORSConfig.AllowHeaders,
+		AllowMethods: extMethods,
+	}))
+
+	// Create App instance.
+	app := &modules.ImagineApp{
+		Engine:      engine,
+		Dav:         dav,
+		AuthService: authService,
 	}
 
-	return s
-}
+	// Initialize Routes
+	routes.Init(app)
 
-func (s *Server) Run(port string) error {
-	s.Echo.Start(port)
-	return nil
+	return app
 }
