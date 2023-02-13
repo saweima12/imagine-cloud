@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/saweima12/imagine/internal/imagine"
 	"github.com/urfave/cli/v2"
 )
@@ -20,6 +22,11 @@ var CmdServer = cli.Command{
 
 func runServer(c *cli.Context) error {
 	s := imagine.New()
-	s.Run(":8001")
+	err := s.Run(":8001")
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	return nil
 }
