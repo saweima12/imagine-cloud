@@ -36,7 +36,8 @@ func New() *modules.ImagineApp {
 	}
 
 	// Initialize Routes
-	routes.Init(app)
+	router := routes.NewRouter(app)
+	router.Init()
 
 	return app
 }
