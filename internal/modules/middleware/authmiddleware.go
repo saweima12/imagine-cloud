@@ -22,7 +22,6 @@ func CustomBasicAuth(app *modules.ImagineApp) echo.MiddlewareFunc {
 			}
 
 			valid, err := app.AuthService.CheckAuthorization(username, password)
-
 			if err != nil {
 				return err
 			} else if valid {
