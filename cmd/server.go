@@ -14,7 +14,7 @@ var CmdServer = cli.Command{
 		&cli.StringFlag{
 			Name:    "port",
 			Aliases: []string{"p"},
-			Value:   "8000",
+			Value:   "8001",
 			Usage:   "Temporary port number",
 		},
 	},
@@ -22,7 +22,11 @@ var CmdServer = cli.Command{
 
 func runServer(c *cli.Context) error {
 	s := imagine.New()
-	err := s.Run(":8001")
+
+	port := c.String("port")
+	portStr := fmt.Sprintf(":%v", port)
+
+	err := s.Run(portStr)
 
 	if err != nil {
 		fmt.Println(err)
