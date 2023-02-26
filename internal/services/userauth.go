@@ -11,7 +11,7 @@ import (
 
 type UserAuthService interface {
 	VerifyUser(username, password string) (string, error)
-	CheckAuthorization(username, password string) (bool, error)
+	CheckAuthorization(username, password string) bool
 	GenerateToken(username, password string) string
 }
 
@@ -37,18 +37,16 @@ func (s *service) VerifyUser(username, password string) (string, error) {
 	return "", err
 }
 
-func (s *service) CheckAuthorization(username, password string) (bool, error) {
+func (s *service) CheckAuthorization(username, password string) bool {
 	userContext := config.GetUserContext()
 
 	hashString := s.GenerateToken(userContext.Username, userContext.Password)
 
 	if subtle.ConstantTimeCompare([]byte(username), []byte(userContext.Username)) == 1 &&
 		subtle.ConstantTimeCompare([]byte(password), []byte(hashString)) == 1 {
-		return true, nil
+		return true
 	}
-
-	err := errors.New("Unauthorized")
-	return false, err
+	return false
 }
 
 func (s *service) GenerateToken(username, password string) string {

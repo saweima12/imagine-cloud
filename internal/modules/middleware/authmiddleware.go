@@ -17,18 +17,17 @@ func CustomBasicAuth(app *modules.ImagineApp) echo.MiddlewareFunc {
 		return func(ctx echo.Context) error {
 			auth := ctx.Request().Header.Get(echo.HeaderAuthorization)
 			username, password, err := splitBasicAuthInfo(auth)
+
 			if err != nil {
 				return err
 			}
 
-			valid, err := app.AuthService.CheckAuthorization(username, password)
-			if err != nil {
-				return err
-			} else if valid {
-				return next(ctx)
+			valid := app.AuthService.CheckAuthorization(username, password)
+			if !valid {
+				return echo.ErrUnauthorized
 			}
 
-			return echo.ErrUnauthorized
+			return next(ctx)
 		}
 	}
 }
@@ -40,7 +39,7 @@ func splitBasicAuthInfo(auth string) (string, string, error) {
 	if len(auth) > l+1 && strings.ToLower(auth[:l]) == basic {
 		b, err := base64.StdEncoding.DecodeString(auth[l+1:])
 		if err != nil {
-			return "", "", echo.ErrBadRequest
+			return "", "", echo.ErrUnauthorized
 		}
 		cred := string(b)
 		for i := 0; i < len(cred); i++ {
@@ -50,5 +49,5 @@ func splitBasicAuthInfo(auth string) (string, string, error) {
 		}
 	}
 
-	return "", "", echo.ErrBadRequest
+	return "", "", echo.ErrUnauthorized
 }

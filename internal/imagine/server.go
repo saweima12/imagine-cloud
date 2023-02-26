@@ -15,7 +15,7 @@ func New() *modules.ImagineApp {
 	authService := services.NewUserAuthService()
 
 	// Add native middleware.
-	// engine.Use(middleware.Logger())
+	engine.Use(middleware.Logger())
 
 	// Add CORS middleware & add support methods
 	defaultMethods := middleware.DefaultCORSConfig.AllowMethods

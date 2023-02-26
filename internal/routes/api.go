@@ -8,7 +8,6 @@ import (
 )
 
 func (r *Router) initApiRoute() {
-
 	app := r.App
 	apiGroup := app.Engine.Group("/api/v1")
 	// Add Login & Operate Endpoint.
@@ -16,6 +15,8 @@ func (r *Router) initApiRoute() {
 
 	operateGroup := apiGroup.Group("")
 	operateGroup.Use(middleware.CustomBasicAuth(app))
+	operateGroup.GET("/health", checkHealth)
+	operateGroup.GET("/diskStatus", queryDiskStatus)
 }
 
 func userlogin(app *modules.ImagineApp) echo.HandlerFunc {
@@ -29,7 +30,7 @@ func userlogin(app *modules.ImagineApp) echo.HandlerFunc {
 		token, err := app.AuthService.VerifyUser(user.Username, user.Password)
 
 		if err != nil {
-			ctx.String(400, "Username or password Error.")
+			ctx.String(401, "Username or password Error.")
 			return err
 		}
 
@@ -37,4 +38,15 @@ func userlogin(app *modules.ImagineApp) echo.HandlerFunc {
 
 		return nil
 	}
+}
+
+func queryDiskStatus(ctx echo.Context) error {
+	info := modules.ReadDiskInfo("/")
+	ctx.JSON(200, info)
+	return nil
+}
+
+func checkHealth(ctx echo.Context) error {
+	ctx.String(200, "ok")
+	return nil
 }
