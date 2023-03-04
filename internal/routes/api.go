@@ -16,7 +16,7 @@ func (r *Router) initApiRoute() {
 	operateGroup := apiGroup.Group("")
 	operateGroup.Use(middleware.CustomBasicAuth(app))
 	operateGroup.GET("/health", checkHealth)
-	operateGroup.GET("/diskStatus", queryDiskStatus)
+	operateGroup.GET("/sysInfo", getSysInfo)
 }
 
 func userlogin(app *modules.ImagineApp) echo.HandlerFunc {
@@ -40,9 +40,11 @@ func userlogin(app *modules.ImagineApp) echo.HandlerFunc {
 	}
 }
 
-func queryDiskStatus(ctx echo.Context) error {
+func getSysInfo(ctx echo.Context) error {
 	info := modules.ReadDiskInfo("/")
-	ctx.JSON(200, info)
+	ctx.JSON(200, modules.DashBoardResponse{
+		Disk: info,
+	})
 	return nil
 }
 
