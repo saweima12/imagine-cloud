@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/saweima12/imagine/internal/imagine"
+	"github.com/saweima12/imagine/internal/server"
 	"github.com/urfave/cli/v2"
 )
 
@@ -21,7 +21,7 @@ var CmdServer = cli.Command{
 }
 
 func runServer(c *cli.Context) error {
-	s := imagine.New()
+	s := server.New()
 
 	port := c.String("port")
 	portStr := fmt.Sprintf(":%v", port)

@@ -1,14 +1,12 @@
-package routes
+package handler
 
-import (
-	"github.com/saweima12/imagine/internal/modules"
-)
+import "github.com/saweima12/imagine/internal/imagine"
 
 type Router struct {
-	App *modules.ImagineApp
+	App *imagine.ServerApp
 }
 
-func NewRouter(app *modules.ImagineApp) *Router {
+func NewRouter(app *imagine.ServerApp) *Router {
 	return &Router{
 		App: app,
 	}
@@ -20,11 +18,12 @@ func (r *Router) Init() {
 	r.App.Engine.Static("/static", "static")
 
 	// register webpage routes
-	r.initWebRoute()
+	r.initWebHandler()
 
 	// register api routes
-	r.initApiRoute()
+	apiGroup := r.App.Engine.Group("/api/v1")
+	r.initApiHandler(apiGroup)
 
 	// Add WebDav endpoint route & attach BasicAuth middleware.
-	r.initWebDAVRoute()
+	r.initWebDAVHandler()
 }

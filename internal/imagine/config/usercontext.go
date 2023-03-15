@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 	"os"
-	"sync"
 )
 
 type UserContext struct {
@@ -11,18 +10,7 @@ type UserContext struct {
 	Password string `json:"password"`
 }
 
-var once sync.Once
-var context *UserContext
-
-func GetUserContext() *UserContext {
-	once.Do(func() {
-		fmt.Println("Loaded UserContext from environment.")
-		context = loadFromEnv()
-	})
-	return context
-}
-
-func loadFromEnv() *UserContext {
+func LoadFromEnv() *UserContext {
 	// Load username & password from os.env
 	username := os.Getenv("IMAGINE_USERNAME")
 	password := os.Getenv("IMAGINE_PASSWORD")
@@ -36,5 +24,4 @@ func loadFromEnv() *UserContext {
 		Username: username,
 		Password: password,
 	}
-
 }

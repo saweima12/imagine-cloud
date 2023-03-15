@@ -1,18 +1,21 @@
-package imagine
+package server
 
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"github.com/saweima12/imagine/internal/modules"
-	"github.com/saweima12/imagine/internal/routes"
-	"github.com/saweima12/imagine/internal/services"
+	"github.com/saweima12/imagine/internal/handler"
+	"github.com/saweima12/imagine/internal/imagine"
+	"github.com/saweima12/imagine/internal/imagine/config"
+	"github.com/saweima12/imagine/internal/service"
 )
 
-func New() *modules.ImagineApp {
-	// Initialize echo engine & services.
+func New() *imagine.ServerApp {
+	// Initialize echo engine & service.
 	engine := echo.New()
-	dav := services.NewDAV()
-	authService := services.NewUserAuthService()
+	dav := service.NewWebDavService()
+
+	// Initialize config
+	userContext := config.LoadFromEnv()
 
 	// Add native middleware.
 	engine.Use(middleware.Logger())
@@ -29,14 +32,14 @@ func New() *modules.ImagineApp {
 	}))
 
 	// Create App instance.
-	app := &modules.ImagineApp{
+	app := &imagine.ServerApp{
+		UserContext: userContext,
 		Engine:      engine,
 		Dav:         dav,
-		AuthService: authService,
 	}
 
 	// Initialize Routes
-	router := routes.NewRouter(app)
+	router := handler.NewRouter(app)
 	router.Init()
 
 	return app

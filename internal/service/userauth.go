@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	"crypto/sha256"
@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 
-	"github.com/saweima12/imagine/internal/modules/config"
+	"github.com/saweima12/imagine/internal/imagine/config"
 )
 
 type UserAuthService interface {
@@ -15,15 +15,18 @@ type UserAuthService interface {
 	GenerateToken(username, password string) string
 }
 
-type service struct {
+type userAuthService struct {
+	UserContext config.UserContext
 }
 
-func NewUserAuthService() UserAuthService {
-	return &service{}
+func NewUserAuthService(userContext config.UserContext) UserAuthService {
+	return &userAuthService{
+		UserContext: userContext,
+	}
 }
 
-func (s *service) VerifyUser(username, password string) (string, error) {
-	userContext := config.GetUserContext()
+func (s *userAuthService) VerifyUser(username, password string) (string, error) {
+	userContext := s.UserContext
 
 	if subtle.ConstantTimeCompare([]byte(username), []byte(userContext.Username)) == 1 &&
 		subtle.ConstantTimeCompare([]byte(password), []byte(userContext.Password)) == 1 {
@@ -37,11 +40,11 @@ func (s *service) VerifyUser(username, password string) (string, error) {
 	return "", err
 }
 
-func (s *service) CheckAuthorization(username, password string) bool {
-	userContext := config.GetUserContext()
+func (s *userAuthService) CheckAuthorization(username, password string) bool {
+	userContext := s.UserContext
 
 	hashString := s.GenerateToken(userContext.Username, userContext.Password)
-
+	// compare user input & config.
 	if subtle.ConstantTimeCompare([]byte(username), []byte(userContext.Username)) == 1 &&
 		subtle.ConstantTimeCompare([]byte(password), []byte(hashString)) == 1 {
 		return true
@@ -49,7 +52,7 @@ func (s *service) CheckAuthorization(username, password string) bool {
 	return false
 }
 
-func (s *service) GenerateToken(username, password string) string {
+func (s *userAuthService) GenerateToken(username, password string) string {
 	// generate sha256 token return.
 	hash := sha256.Sum256([]byte(username + password))
 	hashString := hex.EncodeToString(hash[:])
