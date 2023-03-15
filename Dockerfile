@@ -1,10 +1,11 @@
-FROM golang:1.19-buster
+FROM golang:1.20-buster
 
+
+COPY . /app
 WORKDIR /app
 
-COPY go.mod ./
-COPY go.sum ./
-RUN go mod download && go mod verify
+RUN go build -o ./build/imagine
+RUN cp ./build/imagine /usr/bin
 
-COPY . .
-RUN go build -v -o /usr/local/bin
+EXPOSE 8000
+

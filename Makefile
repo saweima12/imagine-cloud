@@ -2,4 +2,4 @@ dev:
 	go run ./main.go server
 
 build:
-	go build -o build/imagine main.go
+	go build -o ./build/imagine
