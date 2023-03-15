@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/saweima12/imagine/cmd"
 	"github.com/urfave/cli/v2"
 )
