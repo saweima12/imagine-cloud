@@ -5,14 +5,14 @@ import (
 	"strings"
 
 	"github.com/labstack/echo"
-	"github.com/saweima12/imagine/internal/modules"
+	"github.com/saweima12/imagine/internal/service"
 )
 
 const (
 	basic = "basic"
 )
 
-func CustomBasicAuth(app *modules.ImagineApp) echo.MiddlewareFunc {
+func CustomBasicAuth(userAuthService service.UserAuthService) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			auth := ctx.Request().Header.Get(echo.HeaderAuthorization)
@@ -22,7 +22,7 @@ func CustomBasicAuth(app *modules.ImagineApp) echo.MiddlewareFunc {
 				return err
 			}
 
-			valid := app.AuthService.CheckAuthorization(username, password)
+			valid := userAuthService.CheckAuthorization(username, password)
 			if !valid {
 				return echo.ErrUnauthorized
 			}

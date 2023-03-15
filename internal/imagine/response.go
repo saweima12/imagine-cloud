@@ -1,4 +1,4 @@
-package modules
+package imagine
 
 type LoginResponse struct {
 	Token string `json:"token"`

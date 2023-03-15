@@ -1,10 +1,10 @@
-package routes
+package handler
 
 import (
 	echoMI "github.com/labstack/echo/middleware"
 )
 
-func (r *Router) initWebRoute() {
+func (r *Router) initWebHandler() {
 
 	webGroup := r.App.Engine.Group("/")
 	webGroup.Use(echoMI.StaticWithConfig(echoMI.StaticConfig{

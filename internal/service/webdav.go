@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	"net/http"
@@ -7,32 +7,32 @@ import (
 	"golang.org/x/net/webdav"
 )
 
-type WebDAVHandler interface {
+type WebDavService interface {
 	ServeHTTP(w http.ResponseWriter, r *http.Request)
 }
 
-type davHandler struct {
+type webDAVService struct {
 	Native webdav.Handler
 }
 
-func NewDAV() WebDAVHandler {
+func NewWebDavService() WebDavService {
 	// define webdav handler from golang defualt packaage.
 	native := webdav.Handler{
 		FileSystem: webdav.Dir("./data"),
 		LockSystem: webdav.NewMemLS(),
 	}
 
-	return &davHandler{
+	return &webDAVService{
 		Native: native,
 	}
 }
 
-func (handler *davHandler) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+func (service *webDAVService) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	//  remove request's URL, prefix
 	pattern := regexp.MustCompile("^/webdav")
 	newPath := pattern.ReplaceAllString(req.URL.Path, "")
 	req.URL.Path = newPath
 
 	// pass to webdav handler.
-	handler.Native.ServeHTTP(w, req)
+	service.Native.ServeHTTP(w, req)
 }
