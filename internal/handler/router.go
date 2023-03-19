@@ -15,8 +15,6 @@ func NewRouter(app *imagine.ServerApp) *Router {
 func (r *Router) Init() {
 
 	// Add static support for handle webpage.
-	r.App.Engine.Static("/static", "static")
-
 	// register webpage routes
 	r.initWebHandler()
 

@@ -1,8 +1,10 @@
 package server
 
 import (
-	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
+	"fmt"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"github.com/saweima12/imagine/internal/handler"
 	"github.com/saweima12/imagine/internal/imagine"
 	"github.com/saweima12/imagine/internal/imagine/config"
@@ -11,25 +13,29 @@ import (
 
 func New() *imagine.ServerApp {
 	// Initialize echo engine & service.
-	engine := echo.New()
+	engine := gin.Default()
 	dav := service.NewWebDavService()
 
 	// Initialize config
 	userContext := config.LoadFromEnv()
 
 	// Add native middleware.
-	engine.Use(middleware.Logger())
 
 	// Add CORS middleware & add support methods
-	defaultMethods := middleware.DefaultCORSConfig.AllowMethods
-	extMethods := append(defaultMethods, "LOCK", "MOVE", "PROPFIND", "UNLOCK", "PROPPATCH", "MKCOL", "LOCK")
-
-	engine.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		Skipper:      middleware.DefaultSkipper,
-		AllowOrigins: []string{"*"},
-		AllowHeaders: middleware.DefaultCORSConfig.AllowHeaders,
-		AllowMethods: extMethods,
-	}))
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowHeaders = []string{"*"}
+	corsConfig.AllowMethods = append(corsConfig.AllowMethods,
+		"LOCK",
+		"UNLOCK",
+		"COPY",
+		"MOVE",
+		"MKCOL",
+		"PROPFIND",
+		"PROPPATCH",
+	)
+	fmt.Println(corsConfig)
+	engine.Use(cors.New(corsConfig))
 
 	// Create App instance.
 	app := &imagine.ServerApp{

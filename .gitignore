@@ -2,3 +2,4 @@ build/
 .pnpm*.log
 *.code-workspace
 .env
+./data

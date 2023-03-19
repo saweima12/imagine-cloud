@@ -2,7 +2,6 @@ package service
 
 import (
 	"net/http"
-	"regexp"
 
 	"golang.org/x/net/webdav"
 )
@@ -28,11 +27,6 @@ func NewWebDavService() WebDavService {
 }
 
 func (service *webDAVService) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	//  remove request's URL, prefix
-	pattern := regexp.MustCompile("^/webdav")
-	newPath := pattern.ReplaceAllString(req.URL.Path, "")
-	req.URL.Path = newPath
-
 	// pass to webdav handler.
 	service.Native.ServeHTTP(w, req)
 }
